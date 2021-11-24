@@ -1,4 +1,4 @@
-** MAXIMUM BANDWIDTH PROBLEM**
+**MAXIMUM BANDWIDTH PROBLEM**
 
 Network optimization has been an important area in the current research in computer science and computer engineering. 
 
