@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <math.h> 
 #include "graph_generation.h"
-#include "Djikstras.h"
+#include "Dijkstras.h"
 
 using namespace std;
 
@@ -142,7 +142,7 @@ struct MaxHeapNode* maxFringe(struct MaxHeap* heap){                    // Retur
     return root;
 }
 // status value => Unseen = -1 , Fringe = 0, In-tree = 1 , 
-void Djikstraheap(Graph* graph,int s, int t){                           // Implementation of Djikstras algorithm but the fringe with max value is fetched from the max heap that is constantly updated 
+void Dijkstraheap(Graph* graph,int s, int t){                           // Implementation of Dijkstras algorithm but the fringe with max value is fetched from the max heap that is constantly updated 
     int status[graph->V];
     int dad[graph->V];
     int bw[graph->V];

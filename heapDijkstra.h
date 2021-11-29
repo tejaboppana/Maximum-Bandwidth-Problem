@@ -1,5 +1,5 @@
-#ifndef HEAPDJIKSTRA_H
-#define HEAPDJIKSTRA_H
+#ifndef HEAPDIJKSTRA_H
+#define HEAPDIJKSTRA_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +37,6 @@ void upheapify(struct MaxHeap* heap,int index);
 void insertFringe(struct MaxHeap* heap, int v, int bw);
 void updateFringeheap(struct MaxHeap* heap,int v,int bw);
 struct MaxHeapNode* maxFringe(struct Maxheap* heap);
-void Djikstraheap(Graph* graph,int s, int t);
+void Dijkstraheap(Graph* graph,int s, int t);
 
 #endif

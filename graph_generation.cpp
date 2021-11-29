@@ -38,14 +38,14 @@ struct MSTGraph{                                            // Graph structure f
     adjList *array;
 };
 
-struct vertexNode* addNewnode(int dest, int weight){                                          // Function to create a new vertex node 
+struct vertexNode* addNewnode(int dest,int weight){                                          // Function to create a new vertex node 
     struct vertexNode* newNode = (struct vertexNode*)malloc(sizeof(struct vertexNode));
     newNode->dest = dest;
     newNode->weight = weight;
     newNode->next = NULL;
     return newNode;
 }
-Edge * createEdge(int node1, int node2, int weight){                                    // Function to create a new edge node 
+Edge * createEdge(int node1, int node2,int weight){                                 // Function to create a new edge node 
     struct Edge* newEdge = (struct Edge*)malloc(sizeof(struct Edge));
     newEdge->src = node1;
     newEdge->dest = node2;
@@ -59,9 +59,25 @@ void addEdge(struct Graph* graph,int dest, int source){                     // F
     graph->edgeCount++; 
     srand((graph->edgeCount)*rand()*(seed)*(seed));
     seed++;
-   int wt = rand()%10000+1 ;
+    int number = rand()%10000+1;                      
+    int wt;                                                                 // generate random weights 
+   if ((graph->edgeCount)%1000 == 0){
+       wt = rand()%(number)+1;
+   }
+   else if ((graph->edgeCount)%500 == 0) {
+       wt = rand()%(number)+1;
+   }
+   else if ((graph->edgeCount)%100 == 0){
+       wt = rand()%(number)+1;
+   }
+   else if ((graph->edgeCount)%10 == 0){
+       wt = rand()%(number)+1;
+   }
+   else {
+       wt = rand()%(number)+1;
+   }
   //int wt = weight;
-  //  cout << endl << "Weight = " << wt ;
+  // cout << endl << "Weight = " << wt ;
    // cout << endl; 
     struct vertexNode* newNode1 = addNewnode(dest,wt);
     newNode1->next = graph->array[source].head;
@@ -115,13 +131,11 @@ struct Graph* createSparseGraph(int V){                                         
     addEdge(newGraph,4,3,1);
     addEdge(newGraph,1,3,4); */
    for (int i = 0; i < V; i++){                                                 // Adding edges to all the adjacent vertices and creating a cycle so that the graph is connected 
-        srand((i+1)*rand()*rand()*(seed));
-        seed++;
         addEdge(newGraph,i%V,(i+1)%V);
     }
         std::random_device rd1;
         std::default_random_engine generator1;
-        std::poisson_distribution<int> distribution1(6);                        // Poisson distribution makes sure that the average degree is 6 when adding edges 
+        std::poisson_distribution<int> distribution1(3);                        // Poisson distribution makes sure that the average degree is 6 when adding edges 
    // int count=0;
     for (int j =0; j < V; j++){
         int degree = 0;        
@@ -136,7 +150,6 @@ struct Graph* createSparseGraph(int V){                                         
             int x = (int)rand()%(V-1)+1;  
             flag = 0;         
             if ((j!=x) && (newGraph->array[j].head == NULL)){          // check for self loops and also if the vertex has no edges create one without checking any further
-                srand((k+1)*rand()*rand()*(seed++));
                 addEdge(newGraph,j,x);
             }
             else {
@@ -147,7 +160,6 @@ struct Graph* createSparseGraph(int V){                                         
                     }
                 }
                 if (flag == 0){                                                                 
-                    srand((k+1)*rand()*rand()*seed++);
                     addEdge(newGraph,j,x);
                 }
                 else{
@@ -177,8 +189,6 @@ struct Graph* createDenseGraph(int V){                                          
     addEdge(newGraph,1,3,4); */
 
     for (int i = 0; i < V; i++){                                        // Adding edges to all the adjacent vertices and creating a cycle so that the graph is connected 
-        srand((i+1)*rand()*rand()*(seed));
-        seed++;
         addEdge(newGraph2,i%V,(i+1)%V);
     }        
     std::random_device rd;
@@ -188,14 +198,13 @@ struct Graph* createDenseGraph(int V){                                          
         int degree = 0;
         int flag;
         degree = distribution(generator);                               // This is where the number of edges for each vertex is decided and overall average is 1000 (because total number of vertices is 5000)
-     //   cout << "Degree value -> " <<  degree << endl;
+        //cout << "Degree value -> " <<  degree << endl;
         for (int k = 0; k < degree; k++){
             srand((k+1)*rand()*rand()*(seed));
             seed++;
             int x = rand()%(V-1)+1;  
             flag = 0;         
             if ((j!=x) && (newGraph2->array[j].head == NULL)){          // check for self loops and also if the vertex has no edges create one without checking any further
-                srand((k+1)*rand()*rand()*(seed++));
                 addEdge(newGraph2,j,x);
             }
             else {
@@ -207,8 +216,6 @@ struct Graph* createDenseGraph(int V){                                          
                 }
            //     cout<< "Flag value -> " << flag << endl;
                 if (flag == 0){
-                    srand((k+1)*rand()*rand()*(seed));
-                    seed++;
                     addEdge(newGraph2,j,x);
                 }
                 else{
@@ -238,10 +245,12 @@ void printGraph(struct Graph* graph, int type)                                  
     else{
 
        for (Edge* itr = graph->edgehead ; itr!=NULL; itr = itr->next){
-           cout << "(" << itr->src << ", " << itr->dest << ", " << itr->weight << ")"<< " ";
+          //  cout << "(" << itr->src << ", " << itr->dest << ", " << itr->weight << ")"<< " ";
+          cout << "(" << itr->weight << ")"<< " " ;
        }
-       cout << "\n";
     }
+       
+
 }
 
 void printMSTGraph(struct MSTGraph* graph)                                              // Function to print MST graph 

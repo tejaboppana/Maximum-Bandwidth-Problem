@@ -42,8 +42,8 @@ struct MSTGraph{
 void addMSTEdge(struct MSTGraph* graph,int dest, int source, int weight);
 struct MSTGraph* createMSTGraph(int V);
 
-struct vertexNode* addNewnode(int dest, int weight);
-Edge * createEdge(int node1, int node2, int weight);
+struct vertexNode* addNewnode(int dest,int weight);
+Edge * createEdge(int node1, int node2,int weight);
 
 void addEdge(struct Graph* graph,int dest, int source, int weight);
 

@@ -39,7 +39,7 @@ int minfunction(int a, int b){                   // Fucntion to fetch the minimu
         min = b ;
     return min;
 }
-void Djikstras (Graph* graph,int s, int t){            //Main Djikstras algorithm implementation
+void Dijkstras (Graph* graph,int s, int t){            //Main Dijkstras algorithm implementation
     int status[graph->V];
     int dad[graph->V];
     int bw[graph->V];

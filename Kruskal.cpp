@@ -6,7 +6,7 @@
 #include <time.h>
 #include <iomanip>
 #include "graph_generation.h"
-#include "Djikstras.h"
+#include "Dijkstras.h"
 
 using namespace std;
 
@@ -22,115 +22,6 @@ struct edgeHeap{                                              // Heap structure 
     struct edgeHeapNode **array;
 };
 
-struct edgeHeapNode* newEdgeHeapNode(Edge * edge){                                              // Function to create a new heap node
-    struct edgeHeapNode* HeapNode =(struct edgeHeapNode*)malloc(sizeof(struct edgeHeapNode));
-    HeapNode->src = edge->src;
-    HeapNode->dest= edge->dest;
-    HeapNode->weight = edge->weight;
-    return HeapNode;
-}
-
-struct edgeHeap* create_edge_heap(int capacity){                                                  // Function to create a new max heap , which will be used for heap sort 
-    struct edgeHeap* edgeHeap = (struct edgeHeap*)malloc(sizeof(struct edgeHeap));
-    edgeHeap->capacity = capacity;
-    edgeHeap->size = 0;
-    edgeHeap->array = (struct edgeHeapNode **)malloc(capacity *sizeof(struct edgeHeapNode*));
-    return edgeHeap;
-}
-
-void swapEdgeHeapNode(struct edgeHeapNode** a,struct edgeHeapNode** b)                             // Function to swap heap nodes
-{
-    struct edgeHeapNode* t = *a;
-    *a = *b;
-    *b = t;
-}
-
-void upheapify(struct edgeHeap* heap,int index){                                                    // Function used to form a max heap , when you add an element to the heap , but this is not used here since heapify is being done as a part of heap sort 
-
-    int parent ;
-    while(index > 0 ){
-        parent = floor((index-1)/2);
-      //  printf("Parent weight == %d, Index weight = %d\n",heap->array[parent]->weight,heap->array[index]->weight);
-        if (heap->array[index]->weight > heap->array[parent]->weight){
-       //     printf("In the swap loop\n");
-            swapEdgeHeapNode(&heap->array[parent],&heap->array[index]);
-            index = parent;
-        }
-        else {
-            break;
-        }
-    }
-}
-
-void downheapify(struct edgeHeap* heap,int index,int size){                                 // This is the function that is used to heapify (parent is always greater than the child in the heap)
-    //printf("In the start downheapify function\n");
-    int largest, left, right;
-    largest = index;
-    left = 2 * index + 1;
-    right = 2 * index + 2;
-    if (left < size && heap->array[left]->weight > heap->array[largest]->weight)
-        largest = left;
-    if (right < size && heap->array[right]->weight > heap->array[largest]->weight)
-        largest = right;      
-
-    if (largest != index){
-        swapEdgeHeapNode(&heap->array[largest],&heap->array[index]);
-        downheapify(heap,largest,size);
-    }
-   // printf("In the end downheapify function\n");
-}
-
-void insertEdge(struct edgeHeap* heap,Edge * edge) {                                    // Function to add an edge to the heap array 
-
-    struct edgeHeapNode* heapNode = newEdgeHeapNode(edge);
-    heap->size++;
-    heap->array[heap->size-1] = heapNode;
- 
-}
-
-void heapSort(struct edgeHeap* heap, int n){                                           // Function to heap sort 
-    clock_t start, end;
-    for (int i = n/2 -1 ; i >=0 ; i--){                                                // This first heapifies the heap and converts it into a max heap 
-        downheapify(heap,i,n);
-    } 
-     double time_taken_heapsort_firstloop = 0;                                         // then we perform heap sort by swapping the root element with the last element in the array 
-    for (int i = n - 1; i > 0; i--) {
-        start = clock(); 
-        swapEdgeHeapNode(&heap->array[0], &heap->array[i]);
-        end = clock();
-        downheapify(heap,0,i);
-        time_taken_heapsort_firstloop += double(end - start) / double(CLOCKS_PER_SEC);
-    }
-  //  cout << "Time taken by heap sort second for loop(Kruskal) : " << fixed << time_taken_heapsort_firstloop  << setprecision(5);
-  //  cout << " sec " << endl;  
-  //  printf("In the function\n");
-}
-
-void Makeset(int v,int* parent, int* rank){                                     // Makeset function used in the Kruskal algorithm to initialize the parent and rank arrays 
-    parent[v]=-1;
-    rank[v] = 0;
-}
-
-int Find(int v, int* parent, int* rank){                                        // Find function which finds the parent of an element and is used in Kruskal Algorithm 
-    int w = v;
-    while(parent[w]!=-1){
-        w = parent[w];
-    }
-    return w;
-}
-
-void Union(int r1, int r2, int* parent, int* rank){                             // Union function that merges two sets depending on the rank , this is again used in Kruskal algorithm 
-
-    if (rank[r1] > rank[r2])
-        parent[r2] = r1;
-    else if(rank[r1] < rank[r2])
-        parent[r1] = r2;
-    else{
-        parent[r1] = r2;
-        rank[r2]+=1;
-    }
-
-}
 
 struct Queue {                                                                      // Queue implementation for Breadth first search in the MST graph that we create from the edges 
     int front,rear;
@@ -180,6 +71,114 @@ int dequeue(struct Queue* queue)                                // Remove the fi
     queue->front = (queue->front) + 1;//% queue->capacity;
     queue->size = queue->size - 1;
     return item;
+}
+
+struct edgeHeapNode* newEdgeHeapNode(Edge * edge){                                              // Function to create a new heap node
+    struct edgeHeapNode* HeapNode =(struct edgeHeapNode*)malloc(sizeof(struct edgeHeapNode));
+    HeapNode->src = edge->src;
+    HeapNode->dest= edge->dest;
+    HeapNode->weight = edge->weight;
+    return HeapNode;
+}
+
+struct edgeHeap* create_edge_heap(int capacity){                                                  // Function to create a new max heap , which will be used for heap sort 
+    struct edgeHeap* edgeHeap = (struct edgeHeap*)malloc(sizeof(struct edgeHeap));
+    edgeHeap->capacity = capacity;
+    edgeHeap->size = 0;
+    edgeHeap->array = (struct edgeHeapNode **)malloc(capacity *sizeof(struct edgeHeapNode*));
+    return edgeHeap;
+}
+
+void swapEdgeHeapNode(struct edgeHeapNode** a,struct edgeHeapNode** b)                             // Function to swap heap nodes
+{
+    struct edgeHeapNode *t = *a;
+    *a = *b;
+    *b = t;
+}
+
+void upheapify(struct edgeHeap* heap,int index){                                                    // Function used to form a max heap , when you add an element to the heap , but this is not used here since heapify is being done as a part of heap sort 
+
+    int parent ;
+    while(index > 0 ){
+        parent = floor((index-1)/2);
+      //  printf("Parent weight == %d, Index weight = %d\n",heap->array[parent]->weight,heap->array[index]->weight);
+        if (heap->array[index]->weight > heap->array[parent]->weight){
+       //     printf("In the swap loop\n");
+            swapEdgeHeapNode(&heap->array[parent],&heap->array[index]);
+            index = parent;
+        }
+        else {
+            break;
+        }
+    }
+}
+
+void downheapify(struct edgeHeap* heap,int index,int size){                                 // This is the function that is used to heapify (parent is always greater than the child in the heap)
+    //printf("In the start downheapify function\n");
+    int largest, left, right;
+    largest = index;
+    left = 2 * index + 1;
+    right = 2 * index + 2;
+    if (left < size && heap->array[left]->weight > heap->array[largest]->weight)
+        largest = left;
+    if (right < size && heap->array[right]->weight > heap->array[largest]->weight)
+        largest = right;      
+
+    if (largest != index){
+        swapEdgeHeapNode(&heap->array[largest],&heap->array[index]);
+        downheapify(heap,largest,size);
+    }
+   // printf("In the end downheapify function\n");
+}
+
+void insertEdge(struct edgeHeap* heap,Edge * edge) {                                    // Function to add an edge to the heap array 
+
+    struct edgeHeapNode* heapNode = newEdgeHeapNode(edge);
+    heap->size++;
+    heap->array[heap->size-1] = heapNode;
+ 
+}
+
+void heapSort(struct edgeHeap* heap, int n){                                           // Function to heap sort 
+    for (int i = n/2 -1 ; i >=0 ; i--){                                                // This first heapifies the heap and converts it into a max heap 
+        downheapify(heap,i,n);
+    }                                        
+    for (int i = n - 1; i > 0; i--) {
+        swapEdgeHeapNode(&heap->array[0], &heap->array[i]);                            // then we perform heap sort by swapping the root element with the last element in the array 
+        downheapify(heap,0,i);
+    }
+}
+
+void Makeset(int v,int* parent, int* rank){                                     // Makeset function used in the Kruskal algorithm to initialize the parent and rank arrays 
+    parent[v]=-1;
+    rank[v] = 0;
+}
+
+int Find(int v, int* parent, int* rank, int n){                                        // Find function which finds the parent of an element and is used in Kruskal Algorithm 
+    int w = v;
+    struct Queue* findQueue = create_queue(n);
+    while(parent[w]!=-1){
+        enqueue(findQueue,w);
+        w = parent[w];    
+    }
+    while(!isEmpty(findQueue)){
+        int x = dequeue(findQueue);
+        parent[x] = w;
+    }
+    return w;
+}
+
+void Union(int r1, int r2, int* parent, int* rank){                             // Union function that merges two sets depending on the rank , this is again used in Kruskal algorithm 
+
+    if (rank[r1] > rank[r2])
+        parent[r2] = r1;
+    else if(rank[r1] < rank[r2])
+        parent[r1] = r2;
+    else{
+        parent[r1] = r2;
+        rank[r2]+=1;
+    }
+
 }
 
 void BFS(MSTGraph* graph,int s,int t){                                  // Function to perform breadth first search to find the shortest path between 2 nodes from the MST graph 
@@ -237,19 +236,13 @@ void BFS(MSTGraph* graph,int s,int t){                                  // Funct
 
 }
 void Kruskal(Graph* graph,int s, int t){                                      // Kruskal Algorithm function 
- //   clock_t start, end;
     struct edgeHeap* edge_heap = create_edge_heap(graph->edgeCount);          // Create a new heap to store the edges 
     struct MSTGraph* mst_graph = createMSTGraph(graph->V);                    // Create new graph that will have the maximum spanning tree 
     struct Edge* head = graph->edgehead;                                      // This is the head pointer to the linked list of edges from the main graph 
     for (Edge* itr = head; itr != NULL; itr=itr->next){                       // Add each edge into the heap created previously 
         insertEdge(edge_heap,itr);
     }
-  //  start = clock();
-    heapSort(edge_heap,graph->edgeCount);                                       // Perform heapsort on the heap (Maxheap) created , it will sort the edge in increasing order 
-  //  end = clock();
-  //  double time_taken_heapsort = double(end - start) / double(CLOCKS_PER_SEC);
-  //  cout << "Time taken by heap sort(Kruskal) : " << fixed << time_taken_heapsort << setprecision(5);
-  //  cout << " sec " << endl;     
+    heapSort(edge_heap,graph->edgeCount);                                   // Perform heapsort on the heap (Maxheap) created , it will sort the edge in increasing order 
     int * parent = (int *)malloc(graph->V*sizeof(int));                     // Parent array to keep track of parent in the UFM operations 
     int * rank = (int *)malloc(graph->V*sizeof(int));                       // Rank array to keep track of the rank of the vertex in UFM operation 
     for (int i=0;i<graph->V;i++){                                           // Run Makeset on each vertex in the graph 
@@ -258,8 +251,8 @@ void Kruskal(Graph* graph,int s, int t){                                      //
     int k=graph->edgeCount-1, e=0;                                          // We need to add edges from the heap from the last one since the last edge in the array has the maximum weight 
     while(k >= 0 && e < graph->V-1 ){
         struct edgeHeapNode * currentNode = edge_heap->array[k];            // Fetching the edge from the sorted heap 
-        int r1 = Find(currentNode->src,parent,rank);                        // find operation gives the parent 
-        int r2 = Find(currentNode->dest,parent,rank);                       
+        int r1 = Find(currentNode->src,parent,rank,graph->V);                        // find operation gives the parent 
+        int r2 = Find(currentNode->dest,parent,rank,graph->V);                       
         if (r1 != r2){                                                      // If parents are not equal add the edge to the MST graph and also perform an union operation 
             addMSTEdge(mst_graph,currentNode->dest,currentNode->src,currentNode->weight);
             Union(r1,r2,parent,rank);
